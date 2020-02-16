@@ -7,7 +7,6 @@ fetch('/whoami').then((response) => {
 });
 
 const socket = io("/karaoke");
-// const socket = io(options={query:{app:"karaoke"}});
 socket.on("connect", () => {
   console.log('Connected to socket!');
 });
