@@ -1,0 +1,42 @@
+{
+  "name": "YouTube Queue",
+  "short_name": "YT Queue",
+  "version": "0.5.0",
+  "description": "Queue videos from multiple computers to a single computer!",
+  "author": "Daniel Dangond",
+  "permissions": ["storage", "declarativeContent", "activeTab", "tabs"],
+  "options_page": "options.html",
+  "background": {
+    "scripts": [
+      "socket.io.js",
+      "background.js"
+    ],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/"],
+      "js": ["redirect.js"]
+    },
+    {
+      "matches": ["*://*.youtube.com/watch*"],
+      "js": ["youtube.js"]
+    }
+  ],
+  "browser_action": {
+    "default_icon": {
+      "16": "images/icon16.png",
+      "32": "images/icon32.png",
+      "64": "images/icon64.png",
+      "128": "images/icon128.png"
+    },
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "16": "images/icon16.png",
+    "32": "images/icon32.png",
+    "64": "images/icon64.png",
+    "128": "images/icon128.png"
+  },
+  "manifest_version": 2
+}
