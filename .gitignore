@@ -1,0 +1,4 @@
+*.DS_Store
+extension.pem
+aws.pem
+searches.txt
