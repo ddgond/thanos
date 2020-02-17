@@ -4,13 +4,13 @@ const app = express();
 const port = 3000;
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
-const karaoke = require('./apps/karaoke');
+const karaoke = require('./apps/karaoke/app');
 const acronym = require('goodword-acronym');
 
 karaoke.init(server, io.of('karaoke'));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, "public/index.html"));
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
 app.get('/whoami', (req, res) => {
@@ -27,7 +27,7 @@ app.get('/socket.io/socket.io.js', (req, res) => {
 
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use('/karaoke', karaoke.app)
+app.use('/karaoke', karaoke.app);
 
 // app.use(express.static('public'));
 
