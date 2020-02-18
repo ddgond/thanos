@@ -1,0 +1,62 @@
+<html>
+  <head>
+    <script src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css"/>
+  </head>
+  <body class="sans-serif">
+    <div>
+      <h1 id="titleBanner" class="f2 ma0 pa4 bg-red white nowrap">True Colors</h1>
+    </div>
+    <div>
+      <div id="unconnectedDiv" class="measure-narrow ma4">
+        <p class="f6 b db mv2">Enter your name.</p>
+        <input id="playerNameInput" class="input-reset ba b--black-20 pa2 mb2 db w-100" type="text"/>
+        <p class="f6 black-60">Choose a name that will make it easy for others to identify you.</p>
+        <p class="f6 b db mv2">Enter a room code.</p>
+        <input id="roomCodeInput" class="input-reset ba b--black-20 pa2 mb2 db w-100" type="text"/>
+        <p class="f6 black-60">Enter the same code as everyone else in your party. Room codes are CASE-SENSITIVE.</p>
+        <button id="joinRoomButton" class="b pv2 w-100 input-reset ba b--black bg-transparent dim pointer f6 dib" type="button">Join Room</button>
+      </div>
+      <div id="connectedDiv" class="ma4" hidden>
+        <div class="mw7 mb4">
+          <div class="mr4">
+            <p class="f6 mt2 mb0 fw4">Player Name</p>
+            <p id="playerName" class="f3 fw6 mt0 mb2 pt0"></p>
+          </div>
+          <div id="roomInfo" class="mr4 flex flex-wrap">
+            <div class="mr4">
+              <p class="f6 mt2 mb0 fw4">Current Room</p>
+              <p id="connectedRoom" class="f3 fw6 mt0 mb2 pt0"></p>
+              <button id="leaveRoomButton" class="b pv2 input-reset ba b--black bg-transparent dim pointer f6" type="button">Leave Room</button>
+            </div>
+            <div class="mr4">
+              <p class="f6 mt2 mb0 fw4">Questions In Queue</p>
+              <p id="questionCount" class="f3 fw6 mt0 mb2 pt0"></p>
+              <button id="nextQuestionButton" class="b pv2 input-reset ba b--black bg-transparent dim pointer f6" type="button">Next Question</button>
+            </div>
+            <div>
+              <p class="f6 mt2 mb0 fw4">Votes</p>
+              <p id="voteCount" class="f3 fw6 mt0 mb2 pt0"></p>
+              <button id="revealResultsButton" class="b pv2 input-reset ba b--black bg-transparent dim pointer f6" type="button">Reveal Results</button>
+            </div>
+          </div>
+        </div>
+        <hr class="mw7 bb bw1 b--black-10 mt4 mb4 mh0">
+        <div id="submissionDiv">
+          <div id="submissionControls" class="mb4">
+            <p class="f6 b db mv2">Submit a question.</p>
+            <input id="questionInput" class="input-reset ba b--black-20 pa2 mb2 dib measure-narrow w-100" type="text"/>
+            <button id="submitQuestionButton" class="b pv2 input-reset ba b--black bg-transparent dim pointer f6 dib" type="button">Submit</button>
+          </div>
+        </div>
+        <div id="questionDiv" class="mv2 mw7 ba bw2 b--green" hidden>
+          <h3 id="questionText" class="f3 bg-green white ma0 pa3"></h3>
+          <div id="questionOptions" class="ph3"></div>
+          <div id="questionResults" class="ph3" hidden></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/trueColors/js/index.js"></script>
+  </body>
+</html>

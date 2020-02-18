@@ -4,15 +4,19 @@ const app = express();
 const scrapeSearch = require('scrape-youtube');
 const fs = require('fs');
 
+const infoLog = (text) => {
+  console.log("[Karaoke]", text);
+}
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
 app.use(express.static(path.join(__dirname, "public")));
 
-rooms = {};
+const rooms = {};
 
-init = (server, io) => {
+const init = (io) => {
   ytSearch = (searchTerm) => { // Returns a Promise
     fs.appendFile('searches.txt', searchTerm + "\n", (err) => {
       if (err) throw err;
@@ -65,6 +69,7 @@ init = (server, io) => {
       } else {
         io.to(connectedRoom).emit("playNextSong", "https://www.youtube.com/watch?v=dQw4w9WgXcQ");
       }
+      rooms[connectedRoom].skipVotes = [];
     }
   }
 
@@ -86,12 +91,11 @@ init = (server, io) => {
   }
 
   skipCurrentSong = (connectedRoom) => {
-    rooms[connectedRoom].skipVotes = [];
     playNextSong(connectedRoom);
   }
 
   io.on('connection', function(socket) {
-    console.log('a user connected');
+    infoLog('a user connected');
     let connectedRoom;
 
     socket.on('joinRoom', function(data) {
@@ -101,10 +105,10 @@ init = (server, io) => {
         // If hosting
         if (connectedRoom) {
           socket.leave(connectedRoom);
-          console.log(`a host left room ${connectedRoom}`);
+          infoLog(`a host left room ${connectedRoom}`);
         }
         socket.join(roomCode);
-        console.log(`a host joined room ${roomCode}`);
+        infoLog(`a host joined room ${roomCode}`);
         connectedRoom = roomCode;
         rooms[connectedRoom] = {entries: [], state: {}, users: [], skipVotes: []};
         socket.emit("queueList", rooms[connectedRoom].entries);
@@ -112,10 +116,10 @@ init = (server, io) => {
       }
       if (connectedRoom) {
         socket.leave(connectedRoom);
-        console.log(`a user left room ${connectedRoom}`);
+        infoLog(`a user left room ${connectedRoom}`);
       }
       socket.join(roomCode);
-      console.log(`a user joined room ${roomCode}`);
+      infoLog(`a user joined room ${roomCode}`);
       connectedRoom = roomCode;
       if (!rooms[connectedRoom]) {
         rooms[connectedRoom] = {entries: [], state: {}, users: [{id: socket.id, ip: ip}], skipVotes: []};
@@ -153,11 +157,11 @@ init = (server, io) => {
     socket.on('leaveRoom', function() {
       if (connectedRoom && rooms[connectedRoom].users.filter(user=>user.id===socket.id).length > 0) {
         socket.leave(connectedRoom);
-        console.log(`a user left room ${connectedRoom}`);
+        infoLog(`a user left room ${connectedRoom}`);
         connectedRoom = null;
       }
       else if (connectedRoom) {
-        console.log(`a host left room ${connectedRoom}`);
+        infoLog(`a host left room ${connectedRoom}`);
       }
     });
 
@@ -231,6 +235,9 @@ init = (server, io) => {
     socket.on('vote', (data) => {
       if (connectedRoom && rooms[connectedRoom].users.filter(user=>user.id===socket.id).length > 0) {
         if (data.video.id.videoId) {
+          if (rooms[connectedRoom].entries.filter((entry) => entry.video.id.videoId === data.video.id.videoId).length === 0) {
+            return;
+          }
           if (rooms[connectedRoom].entries.filter((entry) => entry.video.id.videoId === data.video.id.videoId)[0].votes.includes(socket.id)) {
             return;
           }
@@ -246,6 +253,9 @@ init = (server, io) => {
     socket.on('downvote', (data) => {
       if (connectedRoom && rooms[connectedRoom].users.filter(user=>user.id===socket.id).length > 0) {
         if (data.video.id.videoId) {
+          if (rooms[connectedRoom].entries.filter((entry) => entry.video.id.videoId === data.video.id.videoId).length === 0) {
+            return;
+          }
           if (rooms[connectedRoom].entries.filter((entry) => entry.video.id.videoId === data.video.id.videoId)[0].downVotes.includes(socket.id)) {
             return;
           }
@@ -263,6 +273,9 @@ init = (server, io) => {
     socket.on('unvote', (data) => {
       if (connectedRoom && rooms[connectedRoom].users.filter(user=>user.id===socket.id).length > 0) {
         if (data.video.id.videoId) {
+          if (rooms[connectedRoom].entries.filter((entry) => entry.video.id.videoId === data.video.id.videoId).length === 0) {
+            return;
+          }
           rooms[connectedRoom].entries = rooms[connectedRoom].entries.map((entry) => {
             if (entry.video.id.videoId === data.video.id.videoId) {
               entry.votes = entry.votes.filter((id) => {
@@ -303,7 +316,7 @@ init = (server, io) => {
     });
 
     socket.on('disconnect', function(reason) {
-      console.log(`a user disconnected due to ${reason}`);
+      infoLog(`a user disconnected due to ${reason}`);
     });
   });
 }

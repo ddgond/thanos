@@ -1,8 +1,7 @@
 # thanos
 Code for our local web server at MIT
 
-Requires nginx set up like so
-
+If using nginx, configure it as follows
 ```
 server {
         listen       80 default_server;

@@ -5,16 +5,18 @@ const port = 3000;
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 const karaoke = require('./apps/karaoke/app');
+const trueColors = require('./apps/true-colors/app');
 const acronym = require('goodword-acronym');
 
-karaoke.init(server, io.of('karaoke'));
+karaoke.init(io.of('karaoke'));
+trueColors.init(io.of('trueColors'));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
 app.get('/whoami', (req, res) => {
-  res.send({ip: req.header('X-Real-IP') || "::ffff:127.0.0.1"});
+  res.send({ip: req.header('X-Real-IP') || req.connection.remoteAddress});
 });
 
 app.get('/acronym', (req, res) => {
@@ -28,8 +30,7 @@ app.get('/socket.io/socket.io.js', (req, res) => {
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use('/karaoke', karaoke.app);
-
-// app.use(express.static('public'));
+app.use('/trueColors', trueColors.app);
 
 server.listen(port, () => {
   console.log(`App listening on port ${port}!`);
